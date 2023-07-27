@@ -14,8 +14,18 @@ GOTEST_FLAGS = --format=$(TEST_FORMAT) -- -count=1 -cover -coverprofile=$(REPORT
 GINKGO_FLAGS = -ginkgo.focus="$(FOCUS)" -ginkgo.v -ginkgo.skip="$(SKIP)" -ginkgo.reportFile=./junit_$(TEST_SCENARIO)_test.xml
 
 # Multiarch support.  Transform argument passed from docker buidx tool to go build arguments to support cross compiling
-GO_BUILD_ARCHITECTURE_VARS := $(if ${TARGETPLATFORM},$(shell echo ${TARGETPLATFORM} | awk -F / '{printf("GOOS=%s GOARCH=%s", $$1, $$2)}'),)
+GO_BUILD_ARCHITECTURE_VARS = 
+ifdef TARGETPLATFORM
+	ifeq ($(TARGETPLATFORM),linux/arm64)
+		GCC_COMPILER = CC=arm-linux-gnu-gcc CXX=arm-linux-gnu-g++
+	endif
+	ifeq ($(TARGETPLATFORM),linux/ppc64le)
+		GCC_COMPILER = CC=powerpc64-linux-gnu-gcc CXX=ppc64-linux-gnu-g++
+	endif
+	GO_BUILD_ARCHITECTURE_VARS = $(GCC_COMPILER) $(shell echo ${TARGETPLATFORM} | awk -F / '{printf("GOOS=%s GOARCH=%s", $$1, $$2)}')
+endif
 GO_BUILD_VARS := CGO_ENABLED=1 $(GO_BUILD_ARCHITECTURE_VARS)
+
 
 all: lint format-check build-images unit-test
 

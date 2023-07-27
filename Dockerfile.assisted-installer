@@ -3,6 +3,14 @@ ARG TARGETPLATFORM
 ENV GOFLAGS=-mod=mod
 WORKDIR /go/src/github.com/openshift/assisted-installer
 
+RUN if [[ "$TARGETPLATFORM" == "linux/arm64" ]] ; then \
+    echo "arm64 $TARGETPLATFORM" ; yum install -y --setopt=skip_missing_names_on_install=False gcc-aarch64-linux-gnu gcc-c++-aarch64-linux-gnu ; \
+  elif [[ "$TARGETPLATFORM" == "linux/ppc64le" ]] ; then \
+    echo "ppc $TARGETPLATFORM" ; yum install -y --setopt=skip_missing_names_on_install=False gcc-ppc64-linux-gnu gcc-c++-ppc64-linux-gnu ; \
+  fi
+
+RUN yum groupinstall -y "Development Tools"
+
 # Bring in the go dependencies before anything else so we can take
 # advantage of caching these layers in future builds.
 COPY go.mod go.mod
