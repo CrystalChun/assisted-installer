@@ -2038,13 +2038,6 @@ func init() {
             "name": "cluster_id",
             "in": "path",
             "required": true
-          },
-          {
-            "type": "boolean",
-            "default": false,
-            "description": "Include system generated manifests in results? Default is false.",
-            "name": "include_system_generated",
-            "in": "query"
           }
         ],
         "responses": {
@@ -3140,88 +3133,6 @@ func init() {
           },
           "500": {
             "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "agentAuth": []
-          }
-        ],
-        "description": "Add new assisted installer event.",
-        "tags": [
-          "events"
-        ],
-        "operationId": "v2TriggerEvent",
-        "parameters": [
-          {
-            "description": "The event to be created.",
-            "name": "trigger-event-params",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/event"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Success."
-          },
-          "400": {
-            "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "schema": {
-              "$ref": "#/definitions/infra_error"
-            }
-          },
-          "403": {
-            "description": "Forbidden.",
-            "schema": {
-              "$ref": "#/definitions/infra_error"
-            }
-          },
-          "404": {
-            "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "409": {
-            "description": "Cluster cannot accept new agents due to its current state.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "500": {
-            "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "501": {
-            "description": "Not implemented.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "503": {
-            "description": "Unavailable.",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -7333,12 +7244,17 @@ func init() {
           "type": "array",
           "items": {
             "type": "object",
-            "x-go-type": {
-              "import": {
-                "path": "github.com/openshift/assisted-service/models"
-              },
-              "type": "DomainResolutionRequestDomain"
-            }
+            "required": [
+              "domain_name"
+            ],
+            "properties": {
+              "domain_name": {
+                "description": "The domain name that should be resolved",
+                "type": "string",
+                "pattern": "^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*[.])+[a-zA-Z]{2,}[.]?$"
+              }
+            },
+            "x-go-name": "DomainResolutionRequestDomain"
           }
         }
       }
@@ -8700,10 +8616,6 @@ func init() {
             "description": "Disk to format",
             "type": "string"
           }
-        },
-        "enable_skip_mco_reboot": {
-          "description": "If true, assisted service will attempt to skip MCO reboot",
-          "type": "boolean"
         },
         "high_availability_mode": {
           "description": "Guaranteed availability of the installed cluster. 'Full' installs a Highly-Available cluster\nover multiple master nodes whereas 'None' installs a full cluster over one node.\n",
@@ -12376,13 +12288,6 @@ func init() {
             "name": "cluster_id",
             "in": "path",
             "required": true
-          },
-          {
-            "type": "boolean",
-            "default": false,
-            "description": "Include system generated manifests in results? Default is false.",
-            "name": "include_system_generated",
-            "in": "query"
           }
         ],
         "responses": {
@@ -13483,88 +13388,6 @@ func init() {
           },
           "500": {
             "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "agentAuth": []
-          }
-        ],
-        "description": "Add new assisted installer event.",
-        "tags": [
-          "events"
-        ],
-        "operationId": "v2TriggerEvent",
-        "parameters": [
-          {
-            "description": "The event to be created.",
-            "name": "trigger-event-params",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/event"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Success."
-          },
-          "400": {
-            "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "401": {
-            "description": "Unauthorized.",
-            "schema": {
-              "$ref": "#/definitions/infra_error"
-            }
-          },
-          "403": {
-            "description": "Forbidden.",
-            "schema": {
-              "$ref": "#/definitions/infra_error"
-            }
-          },
-          "404": {
-            "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "405": {
-            "description": "Method Not Allowed.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "409": {
-            "description": "Cluster cannot accept new agents due to its current state.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "500": {
-            "description": "Error.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "501": {
-            "description": "Not implemented.",
-            "schema": {
-              "$ref": "#/definitions/error"
-            }
-          },
-          "503": {
-            "description": "Unavailable.",
             "schema": {
               "$ref": "#/definitions/error"
             }
@@ -16246,6 +16069,20 @@ func init() {
       },
       "x-nullable": false
     },
+    "DomainResolutionRequestDomainsItems0": {
+      "type": "object",
+      "required": [
+        "domain_name"
+      ],
+      "properties": {
+        "domain_name": {
+          "description": "The domain name that should be resolved",
+          "type": "string",
+          "pattern": "^([a-zA-Z0-9]+(-[a-zA-Z0-9]+)*[.])+[a-zA-Z]{2,}[.]?$"
+        }
+      },
+      "x-go-name": "DomainResolutionRequestDomain"
+    },
     "DomainResolutionResponseResolutionsItems0": {
       "type": "object",
       "required": [
@@ -17786,13 +17623,7 @@ func init() {
         "domains": {
           "type": "array",
           "items": {
-            "type": "object",
-            "x-go-type": {
-              "import": {
-                "path": "github.com/openshift/assisted-service/models"
-              },
-              "type": "DomainResolutionRequestDomain"
-            }
+            "$ref": "#/definitions/DomainResolutionRequestDomainsItems0"
           }
         }
       }
@@ -19130,10 +18961,6 @@ func init() {
             "description": "Disk to format",
             "type": "string"
           }
-        },
-        "enable_skip_mco_reboot": {
-          "description": "If true, assisted service will attempt to skip MCO reboot",
-          "type": "boolean"
         },
         "high_availability_mode": {
           "description": "Guaranteed availability of the installed cluster. 'Full' installs a Highly-Available cluster\nover multiple master nodes whereas 'None' installs a full cluster over one node.\n",
