@@ -207,6 +207,9 @@ func (i *installer) InstallNode() error {
 	if err != nil {
 		i.log.Errorf("upload installation logs %s", err)
 	}
+	if isBootstrap {
+		i.wait()
+	}
 	return i.finalize()
 }
 
@@ -244,6 +247,17 @@ func (i *installer) waitForWorkers(ctx context.Context) error {
 
 		return true
 	})
+}
+
+func (i *installer) wait() {
+	for {
+		i.log.Info("Bootstrap node is in wait loop, create file /tmp/wait.txt to exit and finish finalizing")
+		time.Sleep(4 * time.Minute)
+		if i.ops.FileExists("/tmp/wait.txt") {
+			i.log.Info("file /tmp/wait.txt exists, exiting wait loop")
+			return
+		}
+	}
 }
 
 func (i *installer) finalize() error {
